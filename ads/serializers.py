@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ads.models import Users, Locations
+from ads.models import Users, Locations, Ads
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -111,4 +111,4 @@ class UserDestroySerializer(serializers.ModelSerializer):
         model = Users
         fields = ["id"]
 
-#
+

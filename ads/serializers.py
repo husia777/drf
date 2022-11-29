@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ads.models import Users, Locations
+from ads.models import Users, Locations, Ads
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -69,7 +69,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.save()
 
         for location in self._locations:
-            user_loc, _ = Locations.objects.filter(name=location).get_or_create(name=location)
+            user_loc, _ = Locations.objects.get_or_create(name=location)
             user.location.add(user_loc)
         user.save()
         return user
@@ -86,6 +86,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         exclude = ['id']
+
     def is_valid(self, *, raise_exception=False):
         qd = self.initial_data.copy()
         self._locations = qd.pop('location') if qd['location'] else None
@@ -109,3 +110,4 @@ class UserDestroySerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ["id"]
+

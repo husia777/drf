@@ -1,4 +1,3 @@
-from django.db.models import Count, Q
 from django.http import JsonResponse, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -13,6 +12,12 @@ import json
 
 from ads.serializers import UserCreateSerializer, LocationSerializer, UserListSerializer, UserDetailSerializer, \
     UserUpdateSerializer, UserDestroySerializer
+
+
+class LocAPIListPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 10
 
 
 class Index(View):
@@ -45,8 +50,7 @@ class AdsView(ListView):
         if price_from and price_to:
             ad_list = ad_list.filter(price__range=(int(price_from), int(price_to)))
 
-
-        #price_from = 100 & price_to = 1000
+        # price_from = 100 & price_to = 1000
 
         list_data = []
         for dt in ad_list:
@@ -81,7 +85,7 @@ class AdsDetailView(DetailView):
                 'is_published': ad.is_published,
                 'logo': ad.logo.url,
                 'category': ad.category.name
-                })
+            })
         except:
             return JsonResponse({'error': 'not found'}, status=404)
 
@@ -89,14 +93,14 @@ class AdsDetailView(DetailView):
 @method_decorator(csrf_exempt, name='dispatch')
 class AdsCreateView(CreateView):
     model = Ads
-    fields = ['name', 'author', 'price', 'description',  'is_published']
+    fields = ['name', 'author', 'price', 'description', 'is_published']
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         try:
             category = Category.objects.get(pk=data['category_id'])
         except  Category.DoesNotExist as error:
-            return JsonResponse({"ERROR":f"{error}"})
+            return JsonResponse({"ERROR": f"{error}"})
         try:
             author = Users.objects.get(first_name=data['author'])
         except  Category.DoesNotExist as error:
@@ -114,10 +118,12 @@ class AdsCreateView(CreateView):
 
         return JsonResponse({'res': 'ok'}, status=200)
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class AdsUpdateView(UpdateView):
     model = Ads
-    fields = ['name', 'price', 'description',  'is_published']
+    fields = ['name', 'price', 'description', 'is_published']
+
     def patch(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
         data = json.loads(request.body)
@@ -139,7 +145,8 @@ class AdsUpdateView(UpdateView):
             'is_published': self.object.is_published,
             'logo': self.object.logo.url,
             'category': self.object.category_id
-            }, status=200)
+        }, status=200)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AdsDeleteView(DeleteView):
@@ -148,7 +155,7 @@ class AdsDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         super().delete(request, *args, **kwargs)
-        return JsonResponse({'status':'ok'}, status=200)
+        return JsonResponse({'status': 'ok'}, status=200)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -168,7 +175,7 @@ class AdsAddImage(UpdateView):
             'is_published': self.object.is_published,
             'logo': self.object.logo.url if self.object.logo else None,
             'category': self.object.category.name
-            })
+        })
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -215,11 +222,11 @@ class CategoryCreateView(CreateView):
         return JsonResponse({'res': 'ok'}, status=200)
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 class CategoryUpdateView(UpdateView):
     model = Category
     fields = ['name']
+
     def patch(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
         data = json.loads(request.body)
@@ -229,7 +236,7 @@ class CategoryUpdateView(UpdateView):
         return JsonResponse({
             'id': self.object.id,
             'name': self.object.name,
-            }, status=200)
+        }, status=200)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -265,12 +272,6 @@ class UsersUpdateView(UpdateAPIView):
 class UsersDeleteView(DestroyAPIView):
     queryset = Users.objects.all()
     serializer_class = UserDestroySerializer
-
-
-class LocAPIListPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 10
 
 
 class LocationViewSet(ModelViewSet):

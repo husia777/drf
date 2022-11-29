@@ -21,4 +21,6 @@ urlpatterns = [
     path('user/create/', views.UsersCreateView.as_view()),
     path('user/<int:pk>/update/', views.UsersUpdateView.as_view()),
     path('user/<int:pk>/delete/', views.UsersDeleteView.as_view()),
+
+
 ]

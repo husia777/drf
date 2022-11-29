@@ -17,6 +17,7 @@ class UserListSerializer(serializers.ModelSerializer):
         queryset=Locations.objects.all(),
         slug_field='name',
     )
+
     class Meta:
         model = Users
         fields = '__all__'
@@ -29,6 +30,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         queryset=Locations.objects.all(),
         slug_field='name',
     )
+
     class Meta:
         model = Users
         fields = '__all__'
@@ -46,7 +48,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = Users
         exclude = ['id']
 
-
     def is_valid(self, *, raise_exception=False):
         qd = self.initial_data.copy()
         self._locations = qd.pop('location')
@@ -55,7 +56,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         qd.update({'location': self._locations})
         self.initial_data = qd
         return valid_result
-
 
     def create(self, validated_data):
         user = Users(
@@ -66,12 +66,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
             role=validated_data['role'],
             age=validated_data['age']
         )
-
         user.save()
+
         for location in self._locations:
-            user_loc, _ = Locations.objects.filter(name=location).get_or_create()
-            user_loc.save()
-        user.location.add(user_loc)
+            user_loc, _ = Locations.objects.get_or_create(name=location)
+            user.location.add(user_loc)
         user.save()
         return user
 
@@ -86,8 +85,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Users
-        fields = '__all__'
-
+        exclude = ['id']
 
     def is_valid(self, *, raise_exception=False):
         qd = self.initial_data.copy()
@@ -97,7 +95,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         qd.update({'location': self._locations})
         self.initial_data = qd
         return valid_result
-
 
     def save(self):
         user = super().save()
@@ -113,3 +110,5 @@ class UserDestroySerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ["id"]
+
+#

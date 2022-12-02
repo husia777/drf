@@ -1,6 +1,6 @@
 # DRF Project 2
 
-<h3>Backup БД файл postgres_localhost-2022_11_21_16_05_34-dump.sql</h3>
+<h3>Backup БД файл postgres_localhost-2022_11_30_19_07_12-dump.sql</h3>
 
 <h3>Команды создания и заполнения таблиц </h3>
 ./manage.py makemigrations ads

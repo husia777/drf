@@ -67,12 +67,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
             age=validated_data['age']
         )
         user.save()
-
         for location in self._locations:
             user_loc, _ = Locations.objects.get_or_create(name=location)
             user.location.add(user_loc)
+            user.save()
         user.save()
         return user
+
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
